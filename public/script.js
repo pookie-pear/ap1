@@ -26,7 +26,6 @@ const panoramicTexture = textureLoader.load('./th-929681110.jpg'); // Path to th
 
 // Set the panoramic texture as the background
 scene.background = panoramicTexture;
-scene.background.intensity = 10.0;
 
 // Load the glTF/GLB model with animation
 const gltfLoader = new THREE.GLTFLoader();
