@@ -5,7 +5,7 @@ app.use(express.static("./public"));
 
 // Serve the main HTML file
 app.get("/", function(req, res){
-  res.send("igga");
+  res.redirect("./Untitled-1.html");
 });
 
 const port = process.env.PORT || 3000;
