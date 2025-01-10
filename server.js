@@ -3,13 +3,18 @@ const path = require('path');
 const app = express();
 
 // Serve static files from the "public" directory
-app.use(express.static(path.join(__dirname, './public')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Catch 404 errors for static files
-app.get("/",(err,res)=>
-{
-    res.sendFile("./Untitled-1.html")
-})
+app.use((req, res, next) => {
+  res.status(404).send('File not found');
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).send('Internal Server Error');
+});
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
