@@ -10,6 +10,11 @@ app.use((req, res, next) => {
   res.status(404).send('File not found');
 });
 
+app.get("/",(err,res)=>
+{
+    res.sendFile("./Untitled-1.html")
+})
+
 // Global error handler
 app.use((err, req, res, next) => {
   console.error(err);
