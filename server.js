@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 
-express.static("./public");
+app.use(express.static("./public"));
 
 // Serve the main HTML file
 app.get("/", function(req, res){
