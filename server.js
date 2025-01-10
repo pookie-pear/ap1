@@ -6,15 +6,10 @@ const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Catch 404 errors for static files
-app.use((req, res, next) => {
-  res.status(404).send('File not found');
-});
-
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).send('Internal Server Error');
-});
+app.get("/",(err,res)=>
+{
+    res.sendFile("./Untitled-1.html")
+})
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
