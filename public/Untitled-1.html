@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Animation with Text and Model</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Include the necessary Three.js library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<!-- Include the GLTFLoader from a CDN -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+<!-- Include OrbitControls -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+    // Create the scene, renderer, and camera
+    const scene = new THREE.Scene();
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Set up the camera
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(20, 10, 20);  // Set camera position
+
+    // Add ambient light to soften dark faces
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2); // Soft ambient light (gray with 50% intensity)
+    scene.add(ambientLight);
+
+    // Enable shadow calculations on the renderer
+    renderer.shadowMap.enabled = false;
+
+    
+// Load the panoramic texture (equirectangular image)
+const textureLoader = new THREE.TextureLoader();
+const panoramicTexture = textureLoader.load('./th-929681110.jpg'); // Path to the panoramic image
+    // Create the video element
+const video = document.createElement('video');
+video.src = '0000-0161.mkv'; // Path to your video file
+video.load();
+video.play(); // Start playing the video
+
+// Create a video texture
+const videoTexture = new THREE.VideoTexture(video);
+videoTexture.minFilter = THREE.LinearFilter;
+videoTexture.magFilter = THREE.LinearFilter;
+videoTexture.format = THREE.RGBFormat;
+
+// Set the panoramic texture as the background
+scene.background = panoramicTexture;
+scene.background.intensity = 10.0;
+
+    // Load the glTF model with animation
+    const gltfLoader = new THREE.GLTFLoader();
+    gltfLoader.load('./untitled.gltf', function(gltf) {
+        // Log all object names to the console
+        gltf.scene.traverse((child) => {
+            console.log(child.name);  // This will show you all the object names in your model
+        });
+        const plane = gltf.scene.getObjectByName('Plane2'); // Replace with the actual name of your plane
+
+    if (plane) {
+        // Change the material of the plane to use the video texture
+        plane.material.map = videoTexture;
+
+        // If the plane has multiple materials, make sure you're applying the texture to the correct material
+        // plane.material[0].map = videoTexture;  // For multi-material objects
+    }
+
+        // Add the loaded scene to the main scene
+        scene.add(gltf.scene);
+
+        // Access the object to which the text should be parented (make sure to use the correct name)
+        const modelPivot = gltf.scene.getObjectByName('Cube');  // Replace with the correct name
+
+        if (!modelPivot) {
+            console.error('Model pivot not found! Check the object name.');
+            return;
+        }
+
+        // Create text geometry
+        const loader = new THREE.FontLoader();
+        loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+            const textGeometry = new THREE.TextGeometry('Hello World', {
+                font: font,
+                size: 4,  // Text height
+                height: 1,
+                curveSegments: 12,
+                bevelEnabled: true,
+                bevelThickness: 0.1,
+                bevelSize: 0.1,
+                bevelOffset: 0,
+                bevelSegments: 3
+            });
+
+            // Create text material
+            const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+            
+            // Position the text relative to the model
+            textMesh.position.set(-5, 1, -30);  // Positioning text above the object
+
+            // Parent the text to the glTF object (modelPivot)
+            modelPivot.add(textMesh);
+
+            // Function to make the text face the camera
+            function updateTextOrientation() {
+                textMesh.lookAt(camera.position);  // Make text face the camera
+            }
+
+            // Animation loop
+            const clock = new THREE.Clock();
+
+            function animate() {
+                requestAnimationFrame(animate);
+                const delta = clock.getDelta();
+                updateTextOrientation();  // Update text orientation
+                renderer.render(scene, camera);  // Render the scene with the camera
+            }
+
+            animate();
+        });
+    }, undefined, function(error) {
+        console.error('Error loading model:', error);
+    });
+
+    // Add OrbitControls for camera interaction
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.25;
+
+    // Adjust for window resizing
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+</script>
+
+</body>
+</html>
