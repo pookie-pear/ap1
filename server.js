@@ -3,8 +3,6 @@
 const express = require('express');
 const path = require('path');
 const app = express();
-const port = 8102;
-
 // Serve static files (HTML, GLTF, JS, etc.) from the "public" folder
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -14,6 +12,7 @@ app.get("/",(err,res)=>
 })
 
 // Start the server
+const port = process.env.PORT || 3000;  // Use Render's PORT environment variable
 app.listen(port, () => {
-  console.log(`Server is running at http://localhost:${port}`);
+  console.log(`Server is running on port ${port}`);
 });
