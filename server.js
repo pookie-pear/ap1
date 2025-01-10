@@ -4,7 +4,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 // Serve static files (HTML, GLTF, JS, etc.) from the "public" folder
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));
 
 app.get("/",(err,res)=>
 {
