@@ -11,8 +11,8 @@ app.use((req, res, next) => {
 });
 
 // Serve the main HTML file
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'Untitled-1.html'));
+app.get("/", function(req, res){
+  res.send("igga");
 });
 
 // Global error handler
